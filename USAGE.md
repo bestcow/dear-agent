@@ -45,6 +45,7 @@
 | `.gitignore` | 세션 스크래치 제외 (git 저장소로 만들 때 그대로 사용) |
 | `.gitattributes` | 줄바꿈 LF 고정 — 생성기의 "바이트 동일 출력"이 OS별 CRLF 변환에 깨지지 않게 |
 | `.github/workflows/ci.yml` | 두 생성기의 동일 출력·멱등성 검증 |
+| `.github/banner.png` | README 상단 배너 (소셜 프리뷰용과 동일 이미지) |
 | `LICENSE` | MIT |
 | `USAGE.md` | 이 안내 (구축 후 삭제) |
 

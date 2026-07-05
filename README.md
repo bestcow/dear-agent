@@ -2,7 +2,7 @@
 
 **English** | [한국어](#한국어)
 
-*…here is everything you need to pick up where we left off.*
+![Dear Agent — here is everything you need to pick up where we left off. A 5-file handoff protocol for AI coding agents.](.github/banner.png)
 
 A tiny, opinionated documentation system for projects built with AI coding agents (Claude Code and friends) — the letter your project leaves for the next session's agent.
 
