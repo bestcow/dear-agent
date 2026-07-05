@@ -1,0 +1,37 @@
+# 두 목차 생성기(build-index.ps1 / build-index.py)의 약속을 검증한다:
+#   1. 동일 출력 — 같은 입력이면 바이트 동일한 _INDEX.md·OVERVIEW.md
+#   2. 멱등성 — 생성 직후 -Check/--check가 "변경 불필요"(exit 0)
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  generator-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build twin fixtures
+        run: |
+          mkdir -p /tmp/fix1/apps/proj-a /tmp/fix1/apps/proj-b
+          printf -- '---\nstatus: 개발\nupdated: 2026-01-01\nsummary: fixture A\nrepo: example/a\n---\n# a\n' > /tmp/fix1/apps/proj-a/HANDOFF.md
+          printf -- '---\nstatus: 운영\nupdated: 2026-01-02\nsummary: fixture B\n---\n# b\n' > /tmp/fix1/apps/proj-b/HANDOFF.md
+          cp -r /tmp/fix1 /tmp/fix2
+
+      - name: Run PowerShell generator
+        run: pwsh -File ./build-index.ps1 -Root /tmp/fix1
+
+      - name: Run Python generator
+        run: python3 build-index.py --root /tmp/fix2
+
+      - name: Compare outputs (byte-identical)
+        run: |
+          cmp /tmp/fix1/apps/_INDEX.md /tmp/fix2/apps/_INDEX.md
+          diff <(sed 's|fix1|fixN|g' /tmp/fix1/OVERVIEW.md) <(sed 's|fix2|fixN|g' /tmp/fix2/OVERVIEW.md)
+
+      - name: Idempotence (check mode clean right after generation)
+        run: |
+          pwsh -File ./build-index.ps1 -Root /tmp/fix1 -Check
+          python3 build-index.py --root /tmp/fix2 --check

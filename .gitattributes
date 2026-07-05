@@ -1,0 +1,2 @@
+# 생성기(build-index)가 UTF-8 BOM + LF를 약속하므로, 플랫폼별 CRLF 변환을 막는다.
+* text=auto eol=lf

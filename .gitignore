@@ -1,0 +1,7 @@
+# 세션 스크래치 — 커밋 금지 (USAGE/CONVENTIONS 참고)
+**/.claude/
+**/.remember/
+**/__pycache__/
+
+# 프로젝트(잎)는 각자 독립 repo — 분류 폴더를 만들면 아래처럼 한 줄씩 추가한다.
+# 예) apps/*/
