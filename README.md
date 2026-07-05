@@ -73,18 +73,18 @@ License: [MIT](LICENSE)
 
 ## 한국어
 
-**Dear Agent** — 다음 세션의 에이전트에게 남기는 편지. AI 코딩 에이전트(Claude Code 등)와 함께 만드는 프로젝트를 위한 초소형 문서 체계.
+**Dear Agent** — 다음 세션의 에이전트에게 남기는 편지입니다. AI 코딩 에이전트(Claude Code 등)와 함께 만드는 프로젝트를 위한 초소형 문서 체계입니다.
 
-**문제:** 에이전트는 세션이 끝나면 전부 잊는다. 새 세션마다 "이 프로젝트가 뭐고, 어디까지 했고, 다음이 뭔지"를 다시 설명하게 된다.
+**문제:** 에이전트는 세션이 끝나면 전부 잊습니다. 새 세션마다 "이 프로젝트가 뭐고, 어디까지 했고, 다음이 뭔지"를 다시 설명하게 됩니다.
 
-**해법:** 프로젝트당 md 파일 5개 — 각자 역할이 하나씩, 중복 없음. 프로젝트가 여러 개가 되면 생성기가 `HANDOFF.md` frontmatter를 긁어 전체 지도를 자동으로 만든다.
+**해법:** 프로젝트당 md 파일 5개 — 각자 역할이 하나씩이고, 중복이 없습니다. 프로젝트가 여러 개가 되면 생성기가 `HANDOFF.md` frontmatter를 읽어 전체 지도를 자동으로 만들어 줍니다.
 
 ### 시작하기
 
-- **프로젝트 하나만** → [`_templates/`](_templates/)의 md 5개를 내 레포에 복사해 채운다. 끝.
-  핵심은 `HANDOFF.md` — frontmatter(status·updated·summary·repo)가 프로젝트 상태의 **단일 원본**이고, 에이전트가 세션 시작 때 이걸 읽고 바로 이어서 작업한다. 세션을 끝낼 때마다 갱신하는 게 규칙의 전부.
-- **워크스페이스(여러 프로젝트)** → **Use this template**으로 레포를 만들고 [USAGE.md](USAGE.md)의 7단계를 따른다. 분류 폴더 안에 프로젝트를 두면 `build-index.ps1`(또는 `python3 build-index.py`, **바이트 동일 출력**)가 `_INDEX.md`·`OVERVIEW.md` 목차를 자동 생성한다.
+- **프로젝트 하나만** → [`_templates/`](_templates/)의 md 5개를 내 레포에 복사해 채우면 끝입니다.
+  핵심은 `HANDOFF.md`입니다 — frontmatter(status·updated·summary·repo)가 프로젝트 상태의 **단일 원본**이고, 에이전트가 세션 시작 때 이걸 읽고 바로 이어서 작업합니다. 세션을 끝낼 때마다 갱신하는 것이 규칙의 전부입니다.
+- **워크스페이스(여러 프로젝트)** → **Use this template**으로 레포를 만들고 [USAGE.md](USAGE.md)의 7단계를 따라 주세요. 분류 폴더 안에 프로젝트를 두면 `build-index.ps1`(또는 `python3 build-index.py`, **바이트 동일 출력**)가 `_INDEX.md`·`OVERVIEW.md` 목차를 자동 생성합니다.
 
-전체 규약(문서별 갱신 시점, 상태 값 정의, 단일 출처 원칙)은 [CONVENTIONS.md](CONVENTIONS.md)가 단일 기준이다. 채워진 예시는 [`_example/`](_example/) 참고.
+전체 규약(문서별 갱신 시점, 상태 값 정의, 단일 출처 원칙)은 [CONVENTIONS.md](CONVENTIONS.md)가 단일 기준입니다. 채워진 예시는 [`_example/`](_example/)를 참고하세요.
 
-Claude Code 외 에이전트를 쓰면 `CLAUDE.md`를 `AGENTS.md`로 복사/링크하면 된다.
+Claude Code 외의 에이전트를 쓰신다면 `CLAUDE.md`를 `AGENTS.md`로 복사하거나 링크하면 됩니다.
