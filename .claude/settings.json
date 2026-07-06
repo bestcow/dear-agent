@@ -1,0 +1,24 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/session_brief.py || python .claude/hooks/session_brief.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .claude/hooks/handoff_guard.py || python .claude/hooks/handoff_guard.py"
+          }
+        ]
+      }
+    ]
+  }
+}
