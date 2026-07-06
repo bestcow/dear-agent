@@ -1,5 +1,7 @@
 # 워크스페이스 양식 — 사용법
 
+> English: [USAGE.en.md](USAGE.en.md) _(KO 정본)_
+
 이 폴더는 새 **워크스페이스**(문서 규약을 따르는 작업 루트)를 시작하기 위한 양식이다. 통째로 복사해 채우면 하나의 워크스페이스가 된다. (개별 *프로젝트* 양식은 `_templates/`에 따로 있다.)
 
 ## 새 워크스페이스 만들기
@@ -36,6 +38,8 @@
 | 파일 | 역할 |
 |---|---|
 | `CONVENTIONS.md` | 문서 체계 단일 기준 |
+| `CONVENTIONS.en.md` | CONVENTIONS 영어 미러 (KO가 정본) |
+| `USAGE.en.md` | USAGE 영어 미러 (KO가 정본) |
 | `CLAUDE.md` | 루트 에이전트 운영 지침 (+ 신규 구축 진입점) |
 | `README.md` | 공개 레포 소개 (구축 시 워크스페이스 소개로 교체 — 2단계) |
 | `build-index.ps1` | `_INDEX`·`OVERVIEW` 생성기 (PowerShell, UTF-8 BOM) |

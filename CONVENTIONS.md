@@ -1,5 +1,7 @@
 # 문서 규약 (CONVENTIONS)
 
+> English: [CONVENTIONS.en.md](CONVENTIONS.en.md) _(KO 정본)_
+
 이 문서가 이 워크스페이스 문서 체계의 **단일 기준**이다. `CLAUDE.md`가 이 규약을 가리킨다.
 
 ---

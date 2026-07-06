@@ -75,7 +75,7 @@ Hooks need Python 3.7+ (stdlib only) and a one-time approval prompt when you fir
 
 **Get started:** click **Use this template**, then follow [USAGE.md](USAGE.md) (8 steps). Full rules live in [CONVENTIONS.md](CONVENTIONS.md).
 
-> **Note:** the detailed convention docs (CONVENTIONS.md, USAGE.md, templates) are currently in Korean. This README covers the essentials in English; translations are welcome.
+> Full rulebook in English: [CONVENTIONS.en.md](CONVENTIONS.en.md) · setup guide: [USAGE.en.md](USAGE.en.md). Korean originals are canonical.
 
 License: [MIT](LICENSE)
 
