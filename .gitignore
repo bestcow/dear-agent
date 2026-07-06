@@ -3,5 +3,14 @@
 **/.remember/
 **/__pycache__/
 
+# 단, 루트 .claude의 배포 자산(스킬·훅·설정)은 추적한다.
+# 순서 중요: 디렉터리 재포함 → 내용물 제외 → 배포 자산만 재포함.
+!/.claude/
+/.claude/*
+!/.claude/settings.json
+!/.claude/skills/
+!/.claude/hooks/
+!/.claude/commands/
+
 # 프로젝트(잎)는 각자 독립 repo — 분류 폴더를 만들면 아래처럼 한 줄씩 추가한다.
 # 예) apps/*/
