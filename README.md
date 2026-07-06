@@ -63,7 +63,17 @@ It auto-discovers categories, regenerates `_INDEX.md` / `OVERVIEW.md` between `<
 
 See [`_example/`](_example/) for a filled-in demo, and the generated tables it produces.
 
-**Get started:** click **Use this template**, then follow [USAGE.md](USAGE.md) (7 steps). Full rules live in [CONVENTIONS.md](CONVENTIONS.md).
+## Enforcement — why agents can't ignore it
+
+The convention is enforced in three layers, all shipped inside the template:
+
+1. **`CLAUDE.md`** — always-on context: the rules are visible in every session.
+2. **`dear-agent` skill** (`.claude/skills/`) — step-by-step procedures for session start/end, new projects, and structure changes. `/handoff` runs the session-end procedure on demand.
+3. **Hooks** (`.claude/settings.json`) — deterministic: a SessionStart hook injects the rulebook + live project status into context, and a Stop hook **blocks the session from ending** while any project's files are newer than its `HANDOFF.md`.
+
+Hooks need Python 3.7+ (stdlib only) and a one-time approval prompt when you first open the folder; without Python, layers 1–2 still work.
+
+**Get started:** click **Use this template**, then follow [USAGE.md](USAGE.md) (8 steps). Full rules live in [CONVENTIONS.md](CONVENTIONS.md).
 
 > **Note:** the detailed convention docs (CONVENTIONS.md, USAGE.md, templates) are currently in Korean. This README covers the essentials in English; translations are welcome.
 
@@ -83,8 +93,12 @@ License: [MIT](LICENSE)
 
 - **프로젝트 하나만** → [`_templates/`](_templates/)의 md 5개를 내 레포에 복사해 채우면 끝입니다.
   핵심은 `HANDOFF.md`입니다 — frontmatter(status·updated·summary·repo)가 프로젝트 상태의 **단일 원본**이고, 에이전트가 세션 시작 때 이걸 읽고 바로 이어서 작업합니다. 세션을 끝낼 때마다 갱신하는 것이 규칙의 전부입니다.
-- **워크스페이스(여러 프로젝트)** → **Use this template**으로 레포를 만들고 [USAGE.md](USAGE.md)의 7단계를 따라 주세요. 분류 폴더 안에 프로젝트를 두면 `build-index.ps1`(또는 `python3 build-index.py`, **바이트 동일 출력**)가 `_INDEX.md`·`OVERVIEW.md` 목차를 자동 생성합니다.
+- **워크스페이스(여러 프로젝트)** → **Use this template**으로 레포를 만들고 [USAGE.md](USAGE.md)의 8단계를 따라 주세요. 분류 폴더 안에 프로젝트를 두면 `build-index.ps1`(또는 `python3 build-index.py`, **바이트 동일 출력**)가 `_INDEX.md`·`OVERVIEW.md` 목차를 자동 생성합니다.
 
 전체 규약(문서별 갱신 시점, 상태 값 정의, 단일 출처 원칙)은 [CONVENTIONS.md](CONVENTIONS.md)가 단일 기준입니다. 채워진 예시는 [`_example/`](_example/)를 참고하세요.
 
 Claude Code 외의 에이전트를 쓰신다면 `CLAUDE.md`를 `AGENTS.md`로 복사하거나 링크하면 됩니다.
+
+### 규약이 무시되지 않는 이유
+
+규약은 3중으로 강제되며 전부 template 안에 들어 있습니다: ① `CLAUDE.md`(상시 컨텍스트) ② `dear-agent` 스킬(시작·종료·구조 변경 절차, `/handoff` 포함) ③ 훅(`.claude/settings.json`) — 세션 시작 때 규약과 프로젝트 현황을 컨텍스트에 주입하고, HANDOFF.md가 갱신되지 않은 채 세션을 끝내려 하면 **종료를 차단**합니다. 훅은 Python 3.7+와 최초 1회 승인이 필요하고, 없어도 ①②는 그대로 작동합니다.

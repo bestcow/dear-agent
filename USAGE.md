@@ -4,9 +4,9 @@
 
 ## 새 워크스페이스 만들기
 
-> GitHub이면 **Use this template**(또는 clone)로 새 repo를 만든 뒤, 아래 1~7을 그 폴더 안에서 수행한다.
+> GitHub이면 **Use this template**(또는 clone)로 새 repo를 만든 뒤, 아래 1~8을 그 폴더 안에서 수행한다.
 
-1. **배포물 정리** — 데모 폴더 `_example/`를 삭제한다. 폴더를 직접 복사해 받았다면 세션 스크래치(`.remember/`·`.claude/`·`__pycache__/`)도 삭제한다(git으로 받았으면 없음).
+1. **배포물 정리** — 데모 폴더 `_example/`를 삭제한다. 폴더를 직접 복사해 받았다면 세션 스크래치(`.remember/`·`.claude/worktrees/`·`__pycache__/`)도 삭제한다(git으로 받았으면 없음). ⚠ `.claude/`의 나머지(settings.json·skills/·hooks/·commands/)는 규약 강제 계층이니 지우지 않는다.
 2. **README 교체** — 공개 소개용인 `README.md`를 지우고 아래 스니펫으로 새로 만들어 H1·한 줄 소개를 채운다:
    ```markdown
    # <워크스페이스>
@@ -26,7 +26,8 @@
    - Windows: `powershell -ExecutionPolicy Bypass -File ./build-index.ps1`
    - PowerShell 7 (어느 OS든): `pwsh -File ./build-index.ps1`
    - PowerShell 없음 (mac/linux 등): `python3 build-index.py` _(동일 출력)_
-7. **확인 후 정리** — 생성된 `OVERVIEW.md`가 정상이면 이 `USAGE.md`를 지운다(양식 안내 전용). 절차 요약은 루트 `CLAUDE.md`에도 있어 삭제 후에도 남는다.
+7. **훅 승인** — Claude Code로 이 폴더를 처음 열면 프로젝트 설정(`.claude/settings.json`의 SessionStart/Stop 훅) 승인을 묻는다. 승인해야 규약 강제(세션 브리핑·HANDOFF 게이트)가 작동한다. Python 3.7+가 없으면 훅만 비활성되고 스킬·CLAUDE.md는 그대로 작동한다.
+8. **확인 후 정리** — 생성된 `OVERVIEW.md`가 정상이면 이 `USAGE.md`를 지운다(양식 안내 전용). 절차 요약은 루트 `CLAUDE.md`에도 있어 삭제 후에도 남는다.
 
 ## 구성
 
@@ -42,7 +43,11 @@
 | `_templates/` | 프로젝트(잎) 양식 — PLAN·HANDOFF·LOG·README·CLAUDE |
 | `_example/` | 채워진 데모 워크스페이스 (구축 시 삭제 — 1단계) |
 | `OVERVIEW.md` | 빈 씨앗 (첫 생성 때 채워짐) |
-| `.gitignore` | 세션 스크래치 제외 (git 저장소로 만들 때 그대로 사용) |
+| `.claude/settings.json` | SessionStart/Stop 훅 배선 (규약 강제) |
+| `.claude/hooks/` | 훅 스크립트 — session_brief.py(브리핑 주입)·handoff_guard.py(HANDOFF 게이트) |
+| `.claude/skills/dear-agent/` | 프로젝트 스킬 — 규약 실행 절차 |
+| `.claude/commands/handoff.md` | `/handoff` — 세션 종료 절차 수동 호출 |
+| `.gitignore` | 세션 스크래치 제외 + 루트 .claude 배포 자산 추적 |
 | `.gitattributes` | 줄바꿈 LF 고정 — 생성기의 "바이트 동일 출력"이 OS별 CRLF 변환에 깨지지 않게 |
 | `.github/workflows/ci.yml` | 두 생성기의 동일 출력·멱등성 검증 |
 | `.github/banner.png` | README 상단 배너 (소셜 프리뷰용과 동일 이미지) |

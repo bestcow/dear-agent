@@ -9,7 +9,7 @@
 워크스페이스 최상위 폴더는 둘 중 하나다.
 
 - **work** — 작업 대상(분류 폴더와 그 안의 프로젝트). 문서 규약이 **여기에만** 적용된다.
-- **meta** — 체계 자체. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md`(구축 후 삭제) · `_templates/` · `_example/`(데모, 구축 시 삭제) · `build-index.ps1`·`build-index.py`(목차 생성기) · `.gitignore` · `LICENSE` · `.github/`. 규약 적용·스캔 대상이 **아니다.**
+- **meta** — 체계 자체. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md`(구축 후 삭제) · `_templates/` · `_example/`(데모, 구축 시 삭제) · `build-index.ps1`·`build-index.py`(목차 생성기) · `.claude/`(스킬·훅·설정 — 규약 강제 계층) · `.gitignore` · `LICENSE` · `.github/`. 규약 적용·스캔 대상이 **아니다.**
 
 > 이 워크스페이스 밖의 폴더(별도 도구·지식베이스 등)는 규약 대상이 아니다 — 각자 자기 문서를 가진다.
 
@@ -75,6 +75,19 @@ repo: <org>/<name>      # 원격 없으면 이 줄 삭제
 ## 8. 스캔 제외
 
 목차 생성 스캔은 work(분류 폴더)만 본다. `_templates/`·루트 meta 파일은 제외.
+
+## 9. 강제 계층
+
+규약은 세 겹으로 강제된다. 셋 다 repo에 포함돼 template를 받은 쪽에서도 동일 작동한다.
+
+| 계층 | 파일 | 역할 |
+|---|---|---|
+| 컨텍스트 | 루트 `CLAUDE.md` | 규약 존재와 트리거를 상시 노출 |
+| 스킬 | `.claude/skills/dear-agent/SKILL.md` | 시작·종료·새 프로젝트·구조 변경 절차 (`/handoff` 커맨드 포함) |
+| 훅 | `.claude/settings.json` + `.claude/hooks/*.py` | SessionStart: 규약+현황 컨텍스트 주입 · Stop: HANDOFF가 프로젝트 파일보다 오래되면 종료 차단 |
+
+- 훅은 Python 3.7+(표준 라이브러리만)로 실행된다. Python이 없으면 훅만 조용히 비활성 — 스킬·CLAUDE.md 계층은 그대로 작동한다.
+- 처음 여는 사용자는 Claude Code의 프로젝트 설정(훅) 승인 프롬프트에 동의해야 훅이 작동한다.
 
 ---
 
