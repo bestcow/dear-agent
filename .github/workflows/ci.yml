@@ -18,6 +18,8 @@ jobs:
           mkdir -p /tmp/fix1/apps/proj-a /tmp/fix1/apps/proj-b
           printf -- '---\nstatus: 개발\nupdated: 2026-01-01\nsummary: fixture A\nrepo: example/a\n---\n# a\n' > /tmp/fix1/apps/proj-a/HANDOFF.md
           printf -- '---\nstatus: 운영\nupdated: 2026-01-02\nsummary: fixture B\n---\n# b\n' > /tmp/fix1/apps/proj-b/HANDOFF.md
+          mkdir -p /tmp/fix1/apps/proj-c
+          printf -- '---\nstatus: building\nupdated: 2026-01-03\nsummary: fixture C (alias)\n---\n# c\n' > /tmp/fix1/apps/proj-c/HANDOFF.md
           cp -r /tmp/fix1 /tmp/fix2
 
       - name: Run PowerShell generator
@@ -30,6 +32,9 @@ jobs:
         run: |
           cmp /tmp/fix1/apps/_INDEX.md /tmp/fix2/apps/_INDEX.md
           diff <(sed 's|fix1|fixN|g' /tmp/fix1/OVERVIEW.md) <(sed 's|fix2|fixN|g' /tmp/fix2/OVERVIEW.md)
+
+      - name: alias normalized to canonical
+        run: grep -q '개발' /tmp/fix1/apps/_INDEX.md && grep -q 'proj-c' /tmp/fix1/apps/_INDEX.md
 
       - name: Idempotence (check mode clean right after generation)
         run: |

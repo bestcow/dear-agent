@@ -30,6 +30,7 @@ except Exception:
     pass
 
 STATUS_ORDER = ['운영', '개발', '기획', '보류']
+STATUS_ALIASES = {'planning': '기획', 'building': '개발', 'live': '운영', 'paused': '보류'}
 PROJECT_DOCS = ['PLAN.md', 'HANDOFF.md', 'LOG.md', 'README.md', 'CLAUDE.md']
 GEN_NOTE = '> **생성물** (CONVENTIONS §4). 직접 편집 금지 — `build-index` 재생성. 최종 생성: {0}'
 START = '<!-- AUTO:START -->'
@@ -83,12 +84,13 @@ def get_leaves(container: Path):
                 warnings.append(f"{d}: HANDOFF frontmatter 파싱 실패 — 제외")
                 continue
             status = fm['status'] if fm.get('status') else '?'
+            status = STATUS_ALIASES.get(status.lower(), status)
             summary = fm.get('summary', '')
             repo = fm['repo'] if fm.get('repo') else ''
             if repo and ('<org>' in repo or '<name>' in repo):
                 warnings.append(f"{d}: HANDOFF repo가 미충전 placeholder('{repo}') — 실제 repo로 바꾸거나 줄 삭제")
             if status not in STATUS_ORDER:
-                warnings.append(f"{d}: HANDOFF status '{status}'가 규약 값(기획·개발·운영·보류) 밖 — 오타/placeholder 확인")
+                warnings.append(f"{d}: HANDOFF status '{status}'가 규약 값(기획·개발·운영·보류 / planning·building·live·paused) 밖 — 오타/placeholder 확인")
             updated = fm.get('updated', '')
             if not re.match(r'^\d{4}-\d{2}-\d{2}$', updated):
                 warnings.append(f"{d}: HANDOFF updated '{updated}'가 YYYY-MM-DD 형식 아님(미충전 placeholder?) — 세션 종료 시 갱신")

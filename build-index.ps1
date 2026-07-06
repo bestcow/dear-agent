@@ -40,6 +40,7 @@ if (-not $Root) { $Root = if ($PSScriptRoot) { $PSScriptRoot } else { (Get-Locat
 $Containers  = @()                          # 분류 폴더명. 비우면 자동 탐색(루트 직속 하위, ._ 제외). 특정 폴더만/순서 고정 시에만 명시.
 $Labels      = @{}                          # 분류 폴더별 한 줄 설명 (선택 — 없으면 라벨 생략)
 $StatusOrder = @('운영','개발','기획','보류')          # 표시 순서(0건은 생략)
+$StatusAliases = @{ planning = '기획'; building = '개발'; live = '운영'; paused = '보류' }
 $ProjectDocs = @('PLAN.md','HANDOFF.md','LOG.md','README.md','CLAUDE.md')
 $GenNote     = '> **생성물** (CONVENTIONS §4). 직접 편집 금지 — `build-index` 재생성. 최종 생성: {0}'
 
@@ -82,10 +83,11 @@ function Get-Leaves([string]$containerPath) {
       $fm = Parse-Frontmatter $handoff
       if (-not $fm) { $Warnings.Add("$($d.FullName): HANDOFF frontmatter 파싱 실패 — 제외"); continue }
       $status  = if ($fm.ContainsKey('status')  -and $fm['status'])  { $fm['status'] }  else { '?' }
+      if ($StatusAliases.ContainsKey($status.ToLower())) { $status = $StatusAliases[$status.ToLower()] }
       $summary = if ($fm.ContainsKey('summary')) { $fm['summary'] } else { '' }
       $repo    = if ($fm.ContainsKey('repo')     -and $fm['repo'])    { $fm['repo'] }    else { '' }
       if ($repo -match '<org>|<name>') { $Warnings.Add("$($d.FullName): HANDOFF repo가 미충전 placeholder('$repo') — 실제 repo로 바꾸거나 줄 삭제") }
-      if ($StatusOrder -notcontains $status) { $Warnings.Add("$($d.FullName): HANDOFF status '$status'가 규약 값(기획·개발·운영·보류) 밖 — 오타/placeholder 확인") }
+      if ($StatusOrder -notcontains $status) { $Warnings.Add("$($d.FullName): HANDOFF status '$status'가 규약 값(기획·개발·운영·보류 / planning·building·live·paused) 밖 — 오타/placeholder 확인") }
       $updated = if ($fm.ContainsKey('updated') -and $fm['updated']) { $fm['updated'] } else { '' }
       if ($updated -notmatch '^\d{4}-\d{2}-\d{2}$') { $Warnings.Add("$($d.FullName): HANDOFF updated '$updated'가 YYYY-MM-DD 형식 아님(미충전 placeholder?) — 세션 종료 시 갱신") }
       $leaves += [pscustomobject]@{ Name = $d.Name; Status = $status; Summary = $summary; Repo = $repo }
