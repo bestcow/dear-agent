@@ -11,7 +11,7 @@ This document is the **single source of authority** for this workspace's documen
 Every top-level folder in the workspace is one of two kinds.
 
 - **work** — the things you work on (category folders and the projects inside them). The convention applies **only here**.
-- **meta** — the system itself. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md` (deleted after setup) · `_templates/` · `_example/` (demo, deleted at setup) · `build-index.ps1`·`build-index.py` (index generators) · `.claude/` (skill·hooks·settings — the enforcement layers) · `.gitignore` · `LICENSE` · `.github/`. These are **not** subject to the convention or the scan.
+- **meta** — the system itself. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md` (deleted after setup) · `_templates/` · `_example/` (demo, deleted at setup) · `build-index.ps1`·`build-index.py` (index generators) · `.claude/` (skill·hooks·settings — the enforcement layers) · `docs/` (workspace-shared assets, if present) · `.gitignore` · `LICENSE` · `.github/`. These are **not** subject to the convention or the scan.
 
 > Folders outside this workspace (separate tools, knowledge bases, etc.) are not governed by the convention — each carries its own docs.
 
@@ -77,7 +77,7 @@ repo: <org>/<name>      # delete this line if no remote
 
 ## 8. Scan exclusions
 
-The index-generation scan looks only at work (category folders). `_templates/` and root meta files are excluded.
+The index-generation scan looks only at work (category folders). `_templates/`·`docs/` and root meta files are excluded (the generator does not treat a root-level `docs/` as a container).
 
 ## 9. Enforcement layers
 

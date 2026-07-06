@@ -20,6 +20,8 @@ jobs:
           printf -- '---\nstatus: 운영\nupdated: 2026-01-02\nsummary: fixture B\n---\n# b\n' > /tmp/fix1/apps/proj-b/HANDOFF.md
           mkdir -p /tmp/fix1/apps/proj-c
           printf -- '---\nstatus: building\nupdated: 2026-01-03\nsummary: fixture C (alias)\n---\n# c\n' > /tmp/fix1/apps/proj-c/HANDOFF.md
+          mkdir -p /tmp/fix1/docs/guides
+          printf -- '# shared guide\n' > /tmp/fix1/docs/guides/x.md
           cp -r /tmp/fix1 /tmp/fix2
 
       - name: Run PowerShell generator
@@ -35,6 +37,12 @@ jobs:
 
       - name: alias normalized to canonical
         run: grep -q '개발' /tmp/fix1/apps/_INDEX.md && grep -q 'proj-c' /tmp/fix1/apps/_INDEX.md
+
+      - name: root docs is excluded from scan
+        run: |
+          test ! -f /tmp/fix1/docs/_INDEX.md
+          test ! -f /tmp/fix2/docs/_INDEX.md
+          ! grep -q '## docs' /tmp/fix1/OVERVIEW.md
 
       - name: Idempotence (check mode clean right after generation)
         run: |

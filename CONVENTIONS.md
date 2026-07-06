@@ -11,7 +11,7 @@
 워크스페이스 최상위 폴더는 둘 중 하나다.
 
 - **work** — 작업 대상(분류 폴더와 그 안의 프로젝트). 문서 규약이 **여기에만** 적용된다.
-- **meta** — 체계 자체. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md`(구축 후 삭제) · `_templates/` · `_example/`(데모, 구축 시 삭제) · `build-index.ps1`·`build-index.py`(목차 생성기) · `.claude/`(스킬·훅·설정 — 규약 강제 계층) · `.gitignore` · `LICENSE` · `.github/`. 규약 적용·스캔 대상이 **아니다.**
+- **meta** — 체계 자체. `CONVENTIONS.md` · `OVERVIEW.md` · `CLAUDE.md` · `README.md` · `USAGE.md`(구축 후 삭제) · `_templates/` · `_example/`(데모, 구축 시 삭제) · `build-index.ps1`·`build-index.py`(목차 생성기) · `.claude/`(스킬·훅·설정 — 규약 강제 계층) · `docs/`(워크스페이스 공유 자산, 있으면) · `.gitignore` · `LICENSE` · `.github/`. 규약 적용·스캔 대상이 **아니다.**
 
 > 이 워크스페이스 밖의 폴더(별도 도구·지식베이스 등)는 규약 대상이 아니다 — 각자 자기 문서를 가진다.
 
@@ -77,7 +77,7 @@ repo: <org>/<name>      # 원격 없으면 이 줄 삭제
 
 ## 8. 스캔 제외
 
-목차 생성 스캔은 work(분류 폴더)만 본다. `_templates/`·루트 meta 파일은 제외.
+목차 생성 스캔은 work(분류 폴더)만 본다. `_templates/`·`docs/`·루트 meta 파일은 제외(생성기가 루트 직속 `docs/`를 컨테이너로 보지 않는다).
 
 ## 9. 강제 계층
 

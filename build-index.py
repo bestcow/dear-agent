@@ -31,6 +31,7 @@ except Exception:
 
 STATUS_ORDER = ['운영', '개발', '기획', '보류']
 STATUS_ALIASES = {'planning': '기획', 'building': '개발', 'live': '운영', 'paused': '보류'}
+META_DIRS = {'docs'}  # 루트 직속 meta 폴더(공유 자산) — 컨테이너 스캔 제외 (CONVENTIONS §1·§8)
 PROJECT_DOCS = ['PLAN.md', 'HANDOFF.md', 'LOG.md', 'README.md', 'CLAUDE.md']
 GEN_NOTE = '> **생성물** (CONVENTIONS §4). 직접 편집 금지 — `build-index` 재생성. 최종 생성: {0}'
 START = '<!-- AUTO:START -->'
@@ -175,7 +176,7 @@ def main():
     today = datetime.date.today().strftime('%Y-%m-%d')
     print(f"build-index — Root: {root}  ({today})")
 
-    containers = [d.name for d in subdirs(root)]
+    containers = [d.name for d in subdirs(root) if d.name not in META_DIRS]
     if not containers:
         warnings.append("분류 폴더가 없음 — 빈 워크스페이스로 OVERVIEW만 생성. (프로젝트는 분류 폴더 안에 _templates/ 복사로 만든다)")
 

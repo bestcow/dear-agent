@@ -41,6 +41,7 @@ $Containers  = @()                          # 분류 폴더명. 비우면 자동
 $Labels      = @{}                          # 분류 폴더별 한 줄 설명 (선택 — 없으면 라벨 생략)
 $StatusOrder = @('운영','개발','기획','보류')          # 표시 순서(0건은 생략)
 $StatusAliases = @{ planning = '기획'; building = '개발'; live = '운영'; paused = '보류' }
+$MetaDirs    = @('docs')                     # 루트 직속 meta 폴더(공유 자산) — 컨테이너 스캔 제외 (CONVENTIONS §1·§8)
 $ProjectDocs = @('PLAN.md','HANDOFF.md','LOG.md','README.md','CLAUDE.md')
 $GenNote     = '> **생성물** (CONVENTIONS §4). 직접 편집 금지 — `build-index` 재생성. 최종 생성: {0}'
 
@@ -165,6 +166,7 @@ if (-not $Containers -or $Containers.Count -eq 0) {
   if ($found.Count -gt 1) { [Array]::Sort($found, [System.StringComparer]::Ordinal) }
   $Containers = $found
 }
+$Containers = @($Containers | Where-Object { $MetaDirs -notcontains $_ })  # 루트 meta(docs 등) 제외
 if (-not $Containers -or $Containers.Count -eq 0) {
   $Warnings.Add("분류 폴더가 없음 — 빈 워크스페이스로 OVERVIEW만 생성. (프로젝트는 분류 폴더 안에 _templates/ 복사로 만든다)")
 }
