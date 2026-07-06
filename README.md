@@ -4,6 +4,8 @@
 
 ![Dear Agent — here is everything you need to pick up where we left off. A 5-file handoff protocol for AI coding agents.](.github/banner.png)
 
+[![ci](https://github.com/bestcow/dear-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/bestcow/dear-agent/actions/workflows/ci.yml)
+
 A tiny, opinionated documentation system for projects built with AI coding agents (Claude Code and friends) — the letter your project leaves for the next session's agent.
 
 **The problem:** agents forget everything between sessions. Every new session starts with you re-explaining what the project is, where it stopped, and what to do next.
@@ -76,6 +78,14 @@ Hooks need Python 3.7+ (stdlib only) and a one-time approval prompt when you fir
 **Get started:** click **Use this template**, then follow [USAGE.md](USAGE.md) (8 steps). Full rules live in [CONVENTIONS.md](CONVENTIONS.md).
 
 > Full rulebook in English: [CONVENTIONS.en.md](CONVENTIONS.en.md) · setup guide: [USAGE.en.md](USAGE.en.md). Korean originals are canonical.
+
+## FAQ
+
+**Why not just one big CLAUDE.md?** One file mixes four different update cadences (state changes every session; goals rarely change), so agents either rewrite everything or nothing. Five files with one job each means each update touches exactly one place — and `HANDOFF.md` alone is the state.
+
+**Does this work with agents other than Claude Code?** The five files are plain markdown — any agent can read them. Copy or symlink `CLAUDE.md` to `AGENTS.md` for Codex/Cursor-style agents. The skill/hooks enforcement layer is Claude Code-specific; other agents still get layers via `AGENTS.md`.
+
+**What if I don't have Python?** The hook layer silently disables; the skill and `CLAUDE.md` layers still work. The generator also runs on PowerShell alone (`build-index.ps1`).
 
 License: [MIT](LICENSE)
 
