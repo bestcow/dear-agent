@@ -35,3 +35,37 @@ jobs:
         run: |
           pwsh -File ./build-index.ps1 -Root /tmp/fix1 -Check
           python3 build-index.py --root /tmp/fix2 --check
+
+  enforcement-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: settings.json valid & wires both hooks
+        run: python3 -c "import json; s=json.load(open('.claude/settings.json')); assert 'SessionStart' in s['hooks'] and 'Stop' in s['hooks']"
+
+      - name: skill & command frontmatter present
+        run: |
+          head -1 .claude/skills/dear-agent/SKILL.md | grep -qx -- '---'
+          grep -q '^name: dear-agent$' .claude/skills/dear-agent/SKILL.md
+          grep -q '^description: ' .claude/skills/dear-agent/SKILL.md
+          grep -q '^description: ' .claude/commands/handoff.md
+
+      - name: hooks behave on fixture
+        run: |
+          mkdir -p /tmp/hfix/apps/p1
+          printf -- '---\nstatus: 개발\nupdated: 2026-01-01\nsummary: fixture\n---\n' > /tmp/hfix/apps/p1/HANDOFF.md
+          cp -r .claude /tmp/hfix/
+          # SessionStart: 현황 포함
+          python3 /tmp/hfix/.claude/hooks/session_brief.py | grep -q 'apps/p1'
+          # Stop (a) 신선 → 무출력
+          touch /tmp/hfix/apps/p1/HANDOFF.md
+          echo '{}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py > /tmp/out_a
+          test ! -s /tmp/out_a
+          # Stop (b) 스테일 → block JSON
+          sleep 3
+          echo x > /tmp/hfix/apps/p1/main.py
+          echo '{}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py | grep -q '"decision": "block"'
+          # Stop (c) stop_hook_active → 무출력
+          echo '{"stop_hook_active": true}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py > /tmp/out_c
+          test ! -s /tmp/out_c
