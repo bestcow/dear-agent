@@ -68,17 +68,26 @@ jobs:
         run: |
           mkdir -p /tmp/hfix/apps/p1
           printf -- '---\nstatus: 개발\nupdated: 2026-01-01\nsummary: fixture\n---\n' > /tmp/hfix/apps/p1/HANDOFF.md
+          git init -q /tmp/hfix/apps/p1          # 프로젝트를 독립 repo로 → project 스코프 판정 조건
           cp -r .claude /tmp/hfix/
-          # SessionStart: 현황 포함
-          python3 /tmp/hfix/.claude/hooks/session_brief.py | grep -q 'apps/p1'
-          # Stop (a) 신선 → 무출력
-          touch /tmp/hfix/apps/p1/HANDOFF.md
-          echo '{}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py > /tmp/out_a
+          P=/tmp/hfix/apps/p1
+          SB=/tmp/hfix/.claude/hooks/session_brief.py
+          HG=/tmp/hfix/.claude/hooks/handoff_guard.py
+          # SessionStart 루트 스코프(cwd=워크스페이스): 전 프로젝트 표에 apps/p1
+          echo '{"cwd":"/tmp/hfix","session_id":"s1"}' | python3 "$SB" | grep -q 'apps/p1'
+          # SessionStart 프로젝트 스코프(cwd=프로젝트): 그 프로젝트 헤더만
+          echo "{\"cwd\":\"$P\",\"session_id\":\"s2\"}" | python3 "$SB" | grep -q '현재 프로젝트: apps/p1'
+          # Stop (a) 신선 → 무출력 (project 스코프)
+          touch "$P/HANDOFF.md"
+          echo "{\"cwd\":\"$P\",\"session_id\":\"guard\"}" | python3 "$HG" > /tmp/out_a
           test ! -s /tmp/out_a
           # Stop (b) 스테일 → block JSON
           sleep 3
-          echo x > /tmp/hfix/apps/p1/main.py
-          echo '{}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py | grep -q '"decision": "block"'
+          echo x > "$P/main.py"
+          echo "{\"cwd\":\"$P\",\"session_id\":\"guard\"}" | python3 "$HG" | grep -q '"decision": "block"'
           # Stop (c) stop_hook_active → 무출력
-          echo '{"stop_hook_active": true}' | python3 /tmp/hfix/.claude/hooks/handoff_guard.py > /tmp/out_c
+          echo "{\"cwd\":\"$P\",\"session_id\":\"guard\",\"stop_hook_active\":true}" | python3 "$HG" > /tmp/out_c
           test ! -s /tmp/out_c
+          # Stop (d) 루트 스코프는 하위 프로젝트를 훑지 않음 → 무출력
+          echo '{"cwd":"/tmp/hfix","session_id":"guard2"}' | python3 "$HG" > /tmp/out_d
+          test ! -s /tmp/out_d

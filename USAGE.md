@@ -48,7 +48,7 @@
 | `_example/` | 채워진 데모 워크스페이스 (구축 시 삭제 — 1단계) |
 | `OVERVIEW.md` | 빈 씨앗 (첫 생성 때 채워짐) |
 | `.claude/settings.json` | SessionStart/Stop 훅 배선 (규약 강제) |
-| `.claude/hooks/` | 훅 스크립트 — session_brief.py(브리핑 주입)·handoff_guard.py(HANDOFF 게이트) |
+| `.claude/hooks/` | 훅 스크립트 — session_brief.py(브리핑 주입)·handoff_guard.py(HANDOFF 게이트)·workspace_lib.py(스코프 판정 공통부) |
 | `.claude/skills/dear-agent/` | 프로젝트 스킬 — 규약 실행 절차 |
 | `.claude/commands/handoff.md` | `/handoff` — 세션 종료 절차 수동 호출 |
 | `.gitignore` | 세션 스크래치 제외 + 루트 .claude 배포 자산 추적 |

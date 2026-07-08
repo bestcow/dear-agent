@@ -87,10 +87,11 @@ repo: <org>/<name>      # 원격 없으면 이 줄 삭제
 |---|---|---|
 | 컨텍스트 | 루트 `CLAUDE.md` | 규약 존재와 트리거를 상시 노출 |
 | 스킬 | `.claude/skills/dear-agent/SKILL.md` | 시작·종료·새 프로젝트·구조 변경 절차 (`/handoff` 커맨드 포함) |
-| 훅 | `.claude/settings.json` + `.claude/hooks/*.py` | SessionStart: 규약+현황 컨텍스트 주입 · Stop: HANDOFF가 프로젝트 파일보다 오래되면 종료 차단 |
+| 훅 | `.claude/settings.json` + `.claude/hooks/*.py`(+`workspace_lib.py`) | SessionStart: 규약+현황 주입 — **프로젝트 스코프면 그 HANDOFF만, 루트 스코프면 전 프로젝트 표** · Stop: 현재 프로젝트 파일이 HANDOFF보다 새로우면 종료 차단(**루트 스코프에선 하위 프로젝트 미검사**) |
 
 - 훅은 Python 3.7+(표준 라이브러리만)로 실행된다. Python이 없으면 훅만 조용히 비활성 — 스킬·CLAUDE.md 계층은 그대로 작동한다.
 - 처음 여는 사용자는 Claude Code의 프로젝트 설정(훅) 승인 프롬프트에 동의해야 훅이 작동한다.
+- **스코프 판정**: 훅은 세션의 cwd로 스코프를 정한다. 훅을 **사용자 레벨**(`~/.claude/settings.json`, 디스패처형)에 등록하면 하위 프로젝트 폴더에서 세션을 열 때 자동으로 그 프로젝트 스코프로 판정된다 — 그 프로젝트 HANDOFF만 읽고 Stop 게이트도 그 프로젝트에만 건다. 루트 `.claude`에만 등록하면(기본) 늘 루트 스코프(전 프로젝트 표)로 동작한다.
 
 ---
 

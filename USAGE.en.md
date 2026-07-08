@@ -48,7 +48,7 @@ This folder is a template for starting a new **workspace** (a work root that fol
 | `_example/` | filled-in demo workspace (deleted at setup — step 1) |
 | `OVERVIEW.md` | empty seed (filled on first generation) |
 | `.claude/settings.json` | SessionStart/Stop hook wiring (enforcement) |
-| `.claude/hooks/` | hook scripts — session_brief.py (brief injection)·handoff_guard.py (HANDOFF gate) |
+| `.claude/hooks/` | hook scripts — session_brief.py (brief injection)·handoff_guard.py (HANDOFF gate)·workspace_lib.py (shared scope resolution) |
 | `.claude/skills/dear-agent/` | project skill — the convention's procedures |
 | `.claude/commands/handoff.md` | `/handoff` — manually invoke the session-end procedure |
 | `.gitignore` | excludes session scratch + tracks the root `.claude` distribution assets |

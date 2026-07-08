@@ -87,10 +87,11 @@ The convention is enforced in three layers. All three are included in the repo, 
 |---|---|---|
 | context | root `CLAUDE.md` | keeps the convention's existence and triggers always visible |
 | skill | `.claude/skills/dear-agent/SKILL.md` | procedures for start·end·new project·structure change (includes the `/handoff` command) |
-| hooks | `.claude/settings.json` + `.claude/hooks/*.py` | SessionStart: inject convention + status into context · Stop: block session end when HANDOFF is older than the project's files |
+| hooks | `.claude/settings.json` + `.claude/hooks/*.py` (+`workspace_lib.py`) | SessionStart: inject convention + status — **in project scope only that project's HANDOFF, in root scope the full project table** · Stop: block session end when the current project's files are newer than its HANDOFF (**root scope does not scan sub-projects**) |
 
 - The hooks run on Python 3.7+ (standard library only). With no Python, only the hooks silently disable — the skill·CLAUDE.md layers still work.
 - A first-time user must accept Claude Code's project-settings (hooks) approval prompt for the hooks to run.
+- **Scope resolution**: the hooks pick their scope from the session's cwd. Registered at the **user level** (`~/.claude/settings.json`, dispatcher style), a session opened inside a project folder resolves to that project's scope — it reads only that project's HANDOFF and gates only that project on Stop. Registered only in the root `.claude` (the default), they always run in root scope (the full project table).
 
 ---
 
