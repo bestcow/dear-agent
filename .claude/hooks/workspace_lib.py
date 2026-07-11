@@ -9,6 +9,7 @@ WS_ROOT: 이 파일 위치(.claude/hooks/) 기준 실제 워크스페이스 루�
 import json
 import os
 import re
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -142,9 +143,53 @@ def iter_projects():
                 yield cat.name, proj
 
 
+def _git_listed(checkout: Path):
+    """git 이 무시하지 않는 파일(추적 + 미추적, .gitignore 제외) 절대경로 리스트.
+    git 불가(미설치·repo 아님·오류)면 None → 호출부가 os.walk 로 폴백."""
+    try:
+        r = subprocess.run(
+            ['git', '-C', str(checkout), 'ls-files', '--cached', '--others', '--exclude-standard', '-z'],
+            capture_output=True, timeout=8)
+    except Exception:
+        return None
+    if r.returncode != 0:
+        return None
+    names = r.stdout.decode('utf-8', 'replace').split('\0')
+    return [checkout / n for n in names if n]
+
+
+def _consider(p: Path, checkout: Path, since):
+    """(mtime, Path) or None — SKIP_FILES·SKIP_DIRS·since 필터."""
+    if p.name in SKIP_FILES:
+        return None
+    try:
+        parts = p.relative_to(checkout).parts
+    except ValueError:
+        parts = (p.name,)
+    if any(part in SKIP_DIRS for part in parts[:-1]):
+        return None
+    try:
+        m = p.stat().st_mtime
+    except OSError:
+        return None
+    if since is not None and m <= since:
+        return None
+    return (m, p)
+
+
 def newest_file(checkout: Path, since=None):
-    """HANDOFF·생성물·스크래치 제외 최신 파일 (mtime, Path). since 지정 시 그 이후 것만."""
+    """HANDOFF·생성물·스크래치·.gitignore 제외 최신 파일 (mtime, Path). since 지정 시 그 이후 것만.
+    git 이 무시하는 파일(로그·빌드 산출물·대용량 원본 등)은 자동 제외 — 훅이 코드 변경에만 반응하게 한다.
+    git 불가 환경은 os.walk + SKIP_DIRS/SKIP_FILES 폴백."""
     newest, newest_path = 0.0, None
+    listed = _git_listed(checkout)
+    if listed is not None:
+        for p in listed:
+            got = _consider(p, checkout, since)
+            if got and got[0] > newest:
+                newest, newest_path = got
+        return newest, newest_path
+    # 폴백: git 불가 → 디렉터리 워크(.gitignore 미반영, SKIP_DIRS 로만 굵직하게 제외)
     for dirpath, dirnames, filenames in os.walk(checkout):
         dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
         for name in filenames:
