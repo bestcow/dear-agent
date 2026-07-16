@@ -1,7 +1,7 @@
 ---
 status: 기획
 updated: <YYYY-MM-DD>
-summary: 한 줄 현황
+summary: 한 줄 현황 (지금 상태 스냅샷 ≈800자 이내 · 이력 금지, 그건 LOG · 갱신은 덮어쓰기 — CONVENTIONS §5)
 repo: <org>/<name>
 ---
 
@@ -12,7 +12,7 @@ repo: <org>/<name>
 > _EN: Update at every session end. The frontmatter above is the single source of truth for project state. `status` accepts KO or EN aliases; delete the `repo` line if there's no remote._
 
 ## 마지막 작업
-_방금 무엇을 했나. / What was just done._
+_방금 무엇을 했나. 최신 세션만 — 이전 이력은 LOG.md. / What was just done; latest session only._
 
 ## 다음 할 일
 _바로 이어서 할 것. / What to pick up next._

@@ -61,6 +61,7 @@ repo: <org>/<name>      # delete this line if no remote
 
 - **기획 (planning)** = before code, conception · **개발 (building)** = under construction · **운영 (live)** = live/in use (in use counts as live even if finished — regardless of maintenance frequency) · **보류 (paused)** = stopped (unfinished·halted·superseded·abandoned).
 - English aliases allowed: `planning`→기획 · `building`→개발 · `live`→운영 · `paused`→보류 (the generator normalizes them). Put only the value in the frontmatter — the parser does not strip inline `#` comments, so don't add them.
+- **⚠ `summary` is a one-line snapshot of the *current* state — do not accumulate history (soft cap ≈800 chars).** It goes verbatim into the `OVERVIEW`/`_INDEX` table cell (build-index does not truncate) and SessionStart injects it every session. Never append change logs, commit hashes, or trap details here — those belong in `LOG.md` (by date), `docs/` (by feature), `CLAUDE.md` (structure/traps), and `git log` (§6 boundary). Keep only **what it is now + where to look (pointers)**. Update by **overwrite, not append**. The same applies to the HANDOFF body's "last work" section — latest session only; older goes to LOG.
 
 ## 6. Document boundaries (no overlap)
 
