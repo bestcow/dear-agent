@@ -237,3 +237,36 @@ def read_stamp(session_id: str):
         return float(stamp_path(session_id).read_text(encoding='utf-8').strip())
     except Exception:
         return None
+
+
+def dirty_path(rel: str) -> Path:
+    safe = re.sub(r'[^A-Za-z0-9._-]', '_', str(rel))
+    return STAMP_DIR / f'dirty-{safe}.flag'
+
+
+def mark_dirty(rel: str, reason: str) -> None:
+    """프로젝트가 '코드 변경 + HANDOFF 미갱신'으로 세션을 끝냈음을 기록한다(회수 대상).
+    프로젝트당 한 파일. 다음 SessionStart(session_brief)가 읽어 회수 프롬프트를 띄운다."""
+    try:
+        STAMP_DIR.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps({'at': time.time(), 'reason': reason}, ensure_ascii=False)
+        dirty_path(rel).write_text(payload, encoding='utf-8')
+    except Exception:
+        pass  # 플래그 실패가 종료를 막으면 안 됨
+
+
+def read_dirty(rel: str):
+    """{'at': float, 'reason': str} 또는 None."""
+    try:
+        data = json.loads(dirty_path(rel).read_text(encoding='utf-8'))
+        return data if isinstance(data, dict) else None
+    except Exception:
+        return None
+
+
+def clear_dirty(rel: str) -> None:
+    """회수 대상 해제(HANDOFF를 갱신하고 정상 종료했을 때)."""
+    try:
+        dirty_path(rel).unlink()
+    except Exception:
+        pass

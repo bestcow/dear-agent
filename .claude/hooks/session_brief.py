@@ -61,6 +61,40 @@ def doc_code_drift(checkout: Path, handoff: Path):
     return None
 
 
+def _git(checkout: Path, args, timeout=6):
+    """git 서브커맨드 stdout(성공 시) 또는 빈 문자열. 실패·미설치·타임아웃 모두 ''."""
+    try:
+        out = subprocess.run(['git', '-C', str(checkout), *args],
+                             capture_output=True, text=True, timeout=timeout,
+                             encoding='utf-8', errors='replace')
+        return out.stdout if out.returncode == 0 else ''
+    except Exception:
+        return ''
+
+
+def recovery_block(checkout: Path, rel: str):
+    """지난 세션이 코드 변경 뒤 HANDOFF 미갱신으로 끝났으면(dirty 플래그) 회수 프롬프트 주입.
+    git log/status/diff로 '무엇을 했나'를 복원해 HANDOFF 초안을 만들 재료를 준다."""
+    d = ws.read_dirty(rel)
+    if not d:
+        return
+    print("\n[회수 필요] 지난 세션이 코드 변경 뒤 HANDOFF를 갱신하지 않고 끝났다. "
+          "아래 git 기록으로 '마지막 작업/다음 할 일'을 복원해 HANDOFF 초안을 만들고 "
+          "사용자에게 확인받아라. HANDOFF를 갱신하면(다음 종료 시) 이 알림은 사라진다.")
+    log = _git(checkout, ['log', '-15', '--format=%h %cs %s']).strip()
+    if log:
+        print("--- git log (최근 15) ---")
+        print(log)
+    status = _git(checkout, ['status', '--porcelain']).strip()
+    if status:
+        print("--- 미커밋 변경 (git status --porcelain) ---")
+        print(status)
+    diffstat = _git(checkout, ['diff', '--stat']).strip()
+    if diffstat:
+        print("--- git diff --stat ---")
+        print(diffstat)
+
+
 def project_brief(checkout: Path, rel: str):
     print(RULES)
     print(f"\n[현재 프로젝트: {rel}]")
@@ -84,6 +118,7 @@ def project_brief(checkout: Path, rel: str):
                if not (checkout / d).exists()]
     if missing:
         print(f"! 5종 문서 누락: {', '.join(missing)}")
+    recovery_block(checkout, rel)
 
 
 def root_brief():
