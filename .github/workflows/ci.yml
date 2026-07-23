@@ -73,21 +73,36 @@ jobs:
           P=/tmp/hfix/apps/p1
           SB=/tmp/hfix/.claude/hooks/session_brief.py
           HG=/tmp/hfix/.claude/hooks/handoff_guard.py
+          FLAG=/tmp/hfix/.claude/tmp/dirty-apps_p1.flag   # mark_dirty 회수 플래그 (rel 'apps/p1' → 'apps_p1')
           # SessionStart 루트 스코프(cwd=워크스페이스): 전 프로젝트 표에 apps/p1
           echo '{"cwd":"/tmp/hfix","session_id":"s1"}' | python3 "$SB" | grep -q 'apps/p1'
           # SessionStart 프로젝트 스코프(cwd=프로젝트): 그 프로젝트 헤더만
           echo "{\"cwd\":\"$P\",\"session_id\":\"s2\"}" | python3 "$SB" | grep -q '현재 프로젝트: apps/p1'
-          # Stop (a) 신선 → 무출력 (project 스코프)
+          # Stop 훅은 회수 방식이다: 어떤 경우도 stdout 무출력, 스테일이면 dirty 플래그만 남기고
+          # 회수는 다음 SessionStart가 한다 (옛 '매 응답 block'은 폐기).
+          # Stop (a) 신선 → 무출력 + 회수 플래그 없음
           touch "$P/HANDOFF.md"
           echo "{\"cwd\":\"$P\",\"session_id\":\"guard\"}" | python3 "$HG" > /tmp/out_a
           test ! -s /tmp/out_a
-          # Stop (b) 스테일 → block JSON
+          test ! -f "$FLAG"
+          # Stop (b) 스테일(코드 변경 후 HANDOFF 미갱신) → 무출력이되 회수 플래그 생성
           sleep 3
           echo x > "$P/main.py"
-          echo "{\"cwd\":\"$P\",\"session_id\":\"guard\"}" | python3 "$HG" | grep -q '"decision": "block"'
+          echo "{\"cwd\":\"$P\",\"session_id\":\"guard\"}" | python3 "$HG" > /tmp/out_b
+          test ! -s /tmp/out_b
+          test -f "$FLAG"
+          # 회수: 다음 SessionStart(프로젝트 스코프, 새 세션)가 플래그를 감지해 '회수 필요' 주입
+          echo "{\"cwd\":\"$P\",\"session_id\":\"recover\"}" | python3 "$SB" | grep -q '회수 필요'
           # Stop (c) stop_hook_active → 무출력
           echo "{\"cwd\":\"$P\",\"session_id\":\"guard\",\"stop_hook_active\":true}" | python3 "$HG" > /tmp/out_c
           test ! -s /tmp/out_c
           # Stop (d) 루트 스코프는 하위 프로젝트를 훑지 않음 → 무출력
           echo '{"cwd":"/tmp/hfix","session_id":"guard2"}' | python3 "$HG" > /tmp/out_d
           test ! -s /tmp/out_d
+          # 회수 해제: HANDOFF 갱신 후 정상 종료 → 플래그 제거, 다음 SessionStart는 회수 안 함
+          sleep 1
+          touch "$P/HANDOFF.md"
+          echo "{\"cwd\":\"$P\",\"session_id\":\"guard3\"}" | python3 "$HG" > /tmp/out_e
+          test ! -f "$FLAG"
+          echo "{\"cwd\":\"$P\",\"session_id\":\"recheck\"}" | python3 "$SB" > /tmp/out_f
+          if grep -q '회수 필요' /tmp/out_f; then echo "회수 플래그가 clean stop 후에도 남음"; exit 1; fi
