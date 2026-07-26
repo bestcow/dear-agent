@@ -3,6 +3,22 @@
 > 날짜별 굵직한 변경 한 줄. 세세한 커밋은 git log. (CONVENTIONS §3)
 > _EN: One line per notable change, by date. Fine-grained commits live in git log. (CONVENTIONS §3)_
 
+## 2026-07-26 — CI fixture 테스트를 회수 방식에 맞춤 (green 복구)
+_2026-07-26: `enforcement-assets` fixture가 옛 block 동작을 검증해 red였던 것을 회수 방식에 맞춰 교체 — CI green._
+
+- 훅은 `470ed7f`에서 `스테일→block`을 폐기(dirty 플래그+SessionStart 회수)했으나 `ci.yml`의 "hooks behave on fixture"가 옛 `"decision":"block"`을 검증해 **07-16부터 CI red**였다(훅이 아니라 테스트가 낡음).
+- 교체: 스테일 → 무출력 + `dirty-<slug>.flag`, 다음 SessionStart(project 스코프) → `회수 필요` 주입, clean stop → 플래그 해제·회수 안 함 검증. 로컬 9/9(`WORKSPACE_HOOKS_ROOT` 오버라이드) → push 후 GitHub CI 두 잡 green(run 30052731394). `ci.yml` `a004ff1`.
+
+## 2026-07-16 — HANDOFF 갱신 강제를 회수 방식으로 재설계 (HANDOFF에서 이동)
+_2026-07-16: HANDOFF 갱신 강제를 회수 방식으로 재설계 (block→회수)._
+
+- Stop 훅(`handoff_guard`): 매 응답 종료 `block` 폐기 → `.claude/tmp/dirty-<slug>.flag` 마킹, HANDOFF 갱신하면 클리어. block이 AI를 매번 재소환하던 병목 제거.
+- SessionStart(`session_brief`): project 스코프서 지난 세션 dirty 감지 시 회수 프롬프트 + `git log`/`status`/`diff --stat` 주입(초안→사용자 확인). `_git`·`recovery_block` 신규.
+- `workspace_lib`: `dirty_path`/`mark_dirty`/`read_dirty`/`clear_dirty` 추가.
+- CONVENTIONS §5(KO/EN)·`_templates/HANDOFF.md`: `summary`=현재상태 스냅샷·상한 ≈800자·이력 금지(그건 LOG)·갱신은 덮어쓰기 규칙 명문화.
+- 알려진 한계(설계상 의도): 회수 알림 single-shot — clean 세션이 stale 플래그를 클리어. git이 backstop이라 알림 유실이지 데이터 유실 아님.
+- 검증은 downstream(workspace 사본)에서 41 tests green(실제 git repo 픽스처로 회수 주입 경로까지). push `853c883`.
+
 ## 2026-07-09 — `handoff_guard`/`session_brief` 오탐 근본수정 — `newest_file`이 `.gitignore` 존중 (HANDOFF에서 이동)
 _2026-07-09: `handoff_guard`/`session_brief` 오탐 근본수정 — `newest_file`이 `.gitignore` 존중._
 
